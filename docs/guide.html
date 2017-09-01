@@ -24,7 +24,11 @@ html,body,#wrapper{font-size:10pt!important}
 
 <h2 id="L1.-get-oauth-code">1. Get oauth code</h2>
 
-<p id="code-here">Click <a href="https://google.com">here</a></p>
+<p id='clicktoauth'>Click <a href="https://quizlet.com/authorize">here</a></p>
+
+<p id='authcode'>Your code is xxxx.</p>
+
+<p id='authwarning'><strong>Please paste it to QuizIt settings and use QuizIt add any word in <em>1 minute</em> to active this code.</strong></p>
 
 <h2 id="L2.-get-set-id">2. Get set ID</h2>
 
@@ -70,10 +74,12 @@ html,body,#wrapper{font-size:10pt!important}
   }
   
   if(GetRequest()["code"]){
-    document.getElementById("code-here").innerHTML = "Your oauth code is: " + GetRequest()["code"] +
-    "<br>Please paste it to QuizIt settings and use QuizIt add any word in 1 minute to active this code."
+    document.getElementById("clicktoauth").style.display = "none"
+    document.getElementById("authcode").innerHTML = "Your oauth code is: " + GetRequest()["code"]
   } else {
-    document.getElementById("code-here").innerHTML = "Click <a href='" + getOauthUrl() + "'>here"
+    document.getElementById("clicktoauth").innerHTML = "Click <a href='" + getOauthUrl() + "'>here"
+    document.getElementById("authcode").style.display = "none"
+    document.getElementById("authwarning").style.display = "none"
   }
   </script>
 </body>
