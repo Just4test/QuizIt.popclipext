@@ -70,7 +70,8 @@ html,body,#wrapper{font-size:10pt!important}
   }
   
   if(GetRequest()["code"]){
-    document.getElementById("code-here").innerHTML = "Your oauth code is: " + GetRequest()["code"]
+    document.getElementById("code-here").innerHTML = "Your oauth code is: " + GetRequest()["code"] + \
+    "<br>Please paste it to QuizIt settings and use QuizIt add any word in 1 minute to active this code."
   } else {
     document.getElementById("code-here").innerHTML = "Click <a href='" + getOauthUrl() + "'>here"
   }
