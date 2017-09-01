@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Actions</key>
+	<array>
+		<dict>
+			<key>Image File</key>
+			<string>icon.png</string>
+			<key>Script Interpreter</key>
+			<string>/usr/local/bin/python3</string>
+			<key>Shell Script File</key>
+			<string>run.py</string>
+			<key>Title</key>
+			<string>Quiz It</string>
+			<key>After</key>
+			<string>preview-result</string>
+		</dict>
+	</array>
+	<key>Extension Identifier</key>
+	<string>net.just4test.popclip.quizit</string>
+	<key>Extension Name</key>
+	<string>Quiz It</string>
+	<key>Extension Description</key>
+	<string>查询单词释义并添加到Quizlet</string>
+	<key>Required Software Version</key>
+	<real>1459</real>
+	<key>Image File</key>
+	<string>icon.png</string>
+	<key>Long Running</key>
+	<true/>
+	<key>Options</key>
+	<array>
+		<dict>
+			<key>Option Identifier</key>
+			<string>oauth_code</string>
+			<key>Option Type</key>
+			<string>string</string>
+			<key>Option Default Value</key>
+			<string></string>
+			<key>Option Label</key>
+			<string>请输入oauth code</string>
+		</dict>
+		<dict>
+			<key>Option Identifier</key>
+			<string>set_id</string>
+			<key>Option Type</key>
+			<string>string</string>
+			<key>Option Default Value</key>
+			<string></string>
+			<key>Option Label</key>
+			<string>请输入set ID</string>
+		</dict>
+	</array>
+	<key>Credits</key>
+	<dict>
+		<key>Name</key>
+		<string>Just4test</string>
+		<key>Link</key>
+		<string>https://github.com/Just4test/ShanbayPopClip</string>
+	</dict>
+</dict>
+</plist>
