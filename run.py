@@ -101,14 +101,14 @@ def get_word_definition(word):
 			print(r['msg'])
 			exit(0)
 		
-		return r['data']['definition']
+		return r['data']['content'], r['data']['definition']
 	except requests.exceptions.RequestException as e:
 		print('发生网络错误')
 		exit()
 	
 
 word = os.environ.get('POPCLIP_TEXT', '')
-definition = get_word_definition(word)
+word, definition = get_word_definition(word)
 
 set_id = os.environ.get(SET_ID_ENV, '')
 add_term(set_id, word, definition)
