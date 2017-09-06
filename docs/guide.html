@@ -46,14 +46,11 @@ html,body,#wrapper{font-size:10pt!important}
   let QUIZLET_CLIENT_ID = "AHx9Qur45k"
   
   function GetRequest() {
-    var url = location.search; //获取url中"?"符后的字串
+    var url = location.hash.substring(1); //获取url中"?"符后的字串
     var theRequest = new Object();
-    if (url.indexOf("?") != -1) {
-      var str = url.split("?").pop();
-      strs = str.split("&");
-      for(var i = 0; i < strs.length; i ++) {
-        theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
-      }
+    strs = url.split("&");
+    for(var i = 0; i < strs.length; i ++) {
+      theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
     }
     return theRequest;
   }
@@ -62,7 +59,7 @@ html,body,#wrapper{font-size:10pt!important}
     let url = "https://quizlet.com/authorize"
     let data = {
       "redirect_uri": REDIRECT_URI,
-      "response_type": "code",
+      "response_type": "token",
       "scope": "write_set",
       "state": "nothing",
       "client_id": QUIZLET_CLIENT_ID,
@@ -73,9 +70,11 @@ html,body,#wrapper{font-size:10pt!important}
     return url + "?" + ret.join('&');
   }
   
-  if(GetRequest()["code"]){
+  console.log(location.hash.substring(1));
+  
+  if(GetRequest()["access_token"]){
     document.getElementById("clicktoauth").style.display = "none"
-    document.getElementById("authcode").innerHTML = "Your oauth code is: " + GetRequest()["code"]
+    document.getElementById("authcode").innerHTML = "Your access token is: " + GetRequest()["access_token"]
   } else {
     document.getElementById("clicktoauth").innerHTML = "Click <a href='" + getOauthUrl() + "'>here"
     document.getElementById("authcode").style.display = "none"
