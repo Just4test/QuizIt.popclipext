@@ -23,6 +23,8 @@
 	<string>Quiz It</string>
 	<key>Extension Description</key>
 	<string>查询单词释义并添加到Quizlet</string>
+	<key>Regular Expression</key>
+	<string>^\s*[A-Za-z]+\s*$</string>
 	<key>Required Software Version</key>
 	<real>1459</real>
 	<key>Image File</key>
