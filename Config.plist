@@ -5,16 +5,32 @@
 	<key>Actions</key>
 	<array>
 		<dict>
+			<key>Title</key>
+			<string>Quiz This Word</string>
 			<key>Image File</key>
 			<string>icon.png</string>
 			<key>Script Interpreter</key>
 			<string>/usr/local/bin/python3</string>
 			<key>Shell Script File</key>
 			<string>run.py</string>
-			<key>Title</key>
-			<string>Quiz It</string>
 			<key>After</key>
 			<string>preview-result</string>
+			<key>Regular Expression</key>
+			<string>^\s*[A-Za-z]+\s*$</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Quiz This Sentences</string>
+			<key>Image File</key>
+			<string>icon.png</string>
+			<key>Script Interpreter</key>
+			<string>/usr/local/bin/python3</string>
+			<key>Shell Script File</key>
+			<string>run.py</string>
+			<key>After</key>
+			<string>preview-result</string>
+			<key>Regular Expression</key>
+			<string>[A-Za-z\d\W]+\s[A-Za-z\d\W]+</string>
 		</dict>
 	</array>
 	<key>Extension Identifier</key>
@@ -23,8 +39,6 @@
 	<string>Quiz It</string>
 	<key>Extension Description</key>
 	<string>查询单词释义并添加到Quizlet</string>
-	<key>Regular Expression</key>
-	<string>^\s*[A-Za-z]+\s*$</string>
 	<key>Required Software Version</key>
 	<real>1459</real>
 	<key>Image File</key>

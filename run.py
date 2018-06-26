@@ -1,8 +1,15 @@
 import os
 import requests
 import json
-
 import subprocess
+
+import sys
+if not ('packages' in sys.path):
+	sys.path.insert(0, 'packages')
+if not ('packages.zip' in sys.path):
+	sys.path.insert(0, 'packages.zip')
+import googletrans
+
 
 QUIZLET_CLIENT_ID = 'AHx9Qur45k'
 QUIZLET_SECRET_KEY = 'uG66b7NSPcx9YQBBF4eqbv'
@@ -14,7 +21,7 @@ OAUTH_CODE_ENV = 'POPCLIP_OPTION_OAUTH_CODE'
 ACCESS_TOKEN_ENV = 'POPCLIP_OPTION_ACCESS_TOKEN'
 SET_ID_ENV = 'POPCLIP_OPTION_SET_ID'
 
-#现在可以从guide页面上直接过去access token了
+#现在可以从guide页面上直接获取access token了
 def defaults_storage_write(key, value):
 	'使用defaults存储文本'
 	args = ['defaults', 'write', POPCLIP_BUNDLE_ID, 'extension#{}#{}'.format(EXTENSION_ID, key), str(value)]
@@ -80,9 +87,11 @@ def add_term(access_token, set_id, term, definition):
 			return
 		if r.status_code == 404 or r.status_code == 403:
 			defaults_storage_write('set_id', '不正确的值')
+			print('Set ID 不正确！')
 			exit(2)
 		if r.status_code == 401:
 			defaults_storage_write('oauth_code', '过期，请重新输入')
+			print('Oauth Code 过期！')
 			exit(2)
 		print('发生未知错误，添加条目时返回 {}'.format(r.status_code))
 		exit()
@@ -105,10 +114,22 @@ def get_word_definition(word):
 	except requests.exceptions.RequestException as e:
 		print('发生网络错误')
 		exit()
+		
+def get_sentences_translation(sentence):
+	try:
+		translator = googletrans.Translator()
+		return translator.translate(sentence, dest='zh-cn').text
+	except requests.exceptions.RequestException as e:
+		print('发生网络错误')
+		exit()
+		
 
 
 word = os.environ.get('POPCLIP_TEXT', '')
-word, definition = get_word_definition(word)
+if ' ' in word:
+	definition = get_sentences_translation(word)
+else:
+	word, definition = get_word_definition(word)
 
 set_id = os.environ.get(SET_ID_ENV, '')
 access_token = os.environ.get(ACCESS_TOKEN_ENV, '')
@@ -126,6 +147,7 @@ else:
 	defaults_storage_write('access_token_backup', access_token)
 	
 if set_id == '' or access_token == '':
+	print('set_id = "{}", access_token = "{}"'.format(set_id, access_token))
 	exit(2)
 	
 add_term(access_token, set_id, word, definition)
