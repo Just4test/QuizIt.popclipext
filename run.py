@@ -137,9 +137,10 @@ def get_word_definition(word):
 		exit()
 		
 def get_sentences_translation(sentence):
+	sentence = sentence.replace('\r\n', ' ').replace('\n', ' ').replace('\n', ' ')
 	try:
 		translator = googletrans.Translator()
-		return translator.translate(sentence, dest='zh-cn').text
+		return sentence, translator.translate(sentence, dest='zh-cn').text
 	except requests.exceptions.RequestException as e:
 		print('查询句子定义时发生网络错误\n', e)
 		exit()
@@ -151,7 +152,7 @@ def get_sentences_translation(sentence):
 
 word = os.environ.get('POPCLIP_TEXT', '')
 if ' ' in word:
-	definition = get_sentences_translation(word)
+	word, definition = get_sentences_translation(word)
 else:
 	word, definition = get_word_definition(word)
 
