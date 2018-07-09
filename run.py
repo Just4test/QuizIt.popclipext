@@ -1,25 +1,19 @@
-import os
-import requests
-import json
-import subprocess
-
 import sys
 if not ('packages' in sys.path):
 	sys.path.insert(0, 'packages')
 if not ('packages.zip' in sys.path):
 	sys.path.insert(0, 'packages.zip')
+
+import os
 import googletrans
-
-
-QUIZLET_CLIENT_ID = 'AHx9Qur45k'
-QUIZLET_SECRET_KEY = 'uG66b7NSPcx9YQBBF4eqbv'
+import requests
+import json
+import subprocess
 
 REDIRECT_URL = 'http://htmlpreview.github.io/?https://github.com/Just4test/QuizletThisWord.popclipext/blob/master/docs/guide.html?'
 POPCLIP_BUNDLE_ID = 'com.pilotmoon.popclip'
 EXTENSION_ID = 'net.just4test.popclip.quizit'
-OAUTH_CODE_ENV = 'POPCLIP_OPTION_OAUTH_CODE'
-ACCESS_TOKEN_ENV = 'POPCLIP_OPTION_ACCESS_TOKEN'
-SET_ID_ENV = 'POPCLIP_OPTION_SET_ID'
+POPCLIP_OPTION_PREFIX = 'POPCLIP_OPTION_'
 
 #现在可以从guide页面上直接获取access token了
 def defaults_storage_write(key, value):
@@ -34,6 +28,33 @@ def defaults_storage_read(key, default_value = None):
 	if temp.returncode == 0:
 		return temp.stdout.decode('unicode-escape').rstrip('\n') #turn binary string to string, and remove \n
 	return default_value
+	
+def read_config(*keys):
+	'''
+	假设插件提供了id为xxx的选项：
+	用户指定xxx的值为1时，Popclip将其写入defaults，可使用 defaults_storage_read('xxx') 读出。
+	插件运行时，Popclip将环境变量 POPCLIP_OPTION_XXX 指定为1。
+	安装插件新版本时，Popclip清空该插件的所有选项的值。
+	
+	为了调试方便，读取option的逻辑如下：
+	1. 从环境变量读取 POPCLIP_OPTION_XXX 值。这包含两种情况：
+		1. 代码在Popclip中运行，读出的值来自 defaults 默认位置。
+		2. 代码在IDE中运行，读出的值来自IDE配置。
+	2. 如果值存在，则写入 defaults 备份位置。 defaults_storage_write(key + '_backup', v)
+	3. 如果值不存在，则从 defaults 备份位置读出备份的值，并写入defaults默认位置。这个动作可以保证，用户下次打开配置面板时，该option已被填充。
+	'''
+	results = []
+	for key in keys:
+		# read config from env. If no value, 
+		v = os.environ.get(POPCLIP_OPTION_PREFIX + key.upper(), '')
+		if v == '':
+			v = defaults_storage_read(key + '_backup', '')
+			defaults_storage_write(key, v)
+		else:
+			defaults_storage_write(key + '_backup', v)
+		results.append(v)
+	
+	return results
 
 #def get_oauth_token(code):
 #	url = 'https://api.quizlet.com/oauth/token'
@@ -96,7 +117,7 @@ def add_term(access_token, set_id, term, definition):
 		print('发生未知错误，添加条目时返回 {}'.format(r.status_code))
 		exit()
 	except requests.exceptions.RequestException as e:
-		print('发生网络错误')
+		print('向Quizlet添加生词时发生网络错误\n{}\n{}'.format(url, e))
 		exit()
 
 def get_word_definition(word):
@@ -112,7 +133,7 @@ def get_word_definition(word):
 
 		return r['data']['content'], r['data']['definition']
 	except requests.exceptions.RequestException as e:
-		print('发生网络错误')
+		print('查询单词定义时发生网络错误\n', e)
 		exit()
 		
 def get_sentences_translation(sentence):
@@ -120,8 +141,11 @@ def get_sentences_translation(sentence):
 		translator = googletrans.Translator()
 		return translator.translate(sentence, dest='zh-cn').text
 	except requests.exceptions.RequestException as e:
-		print('发生网络错误')
+		print('查询句子定义时发生网络错误\n', e)
 		exit()
+		
+		
+#def check_new_
 		
 
 
@@ -131,21 +155,7 @@ if ' ' in word:
 else:
 	word, definition = get_word_definition(word)
 
-set_id = os.environ.get(SET_ID_ENV, '')
-access_token = os.environ.get(ACCESS_TOKEN_ENV, '')
-#以下代码为了调试方便，因为每次重新安装popclipext都会清空配置，所以做一个备份恢复机制
-if set_id == '':
-	set_id = defaults_storage_read('set_id_backup', '')
-	defaults_storage_write('set_id', set_id)
-else:
-	defaults_storage_write('set_id_backup', set_id)
-	
-if access_token == '':
-	access_token = defaults_storage_read('access_token_backup', '')
-	defaults_storage_write('access_token', access_token)
-else:
-	defaults_storage_write('access_token_backup', access_token)
-	
+set_id, access_token = read_config('set_id', 'access_token')
 if set_id == '' or access_token == '':
 	print('set_id = "{}", access_token = "{}"'.format(set_id, access_token))
 	exit(2)
